@@ -59,8 +59,8 @@ class CellRendererImage(gtk.GenericCellRenderer):
 
     def __init__(self):
         self.__gobject_init__()
-        self.th1 = 2. # border thickness
-        self.th2 = 3. # shadow thickness
+        self.th1 = 1. # border thickness
+        self.th2 = 0. # shadow thickness
 
     def get_geometry(self):
 

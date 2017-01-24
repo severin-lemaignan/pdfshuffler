@@ -66,7 +66,6 @@ except:
     sys.exit(1)
 
 import gobject      # for using custom signals
-import pango        # for adjusting the text alignment in CellRendererText
 import gio          # for inquiring mime types information
 import cairo
 
@@ -179,20 +178,14 @@ class PdfShuffler:
         self.iv_col_width = self.prefs['initial thumbnail size']
 
         self.iconview = gtk.IconView(self.model)
-        self.iconview.set_item_width(self.iv_col_width + 12)
+        self.iconview.set_item_width(-1)
+        #self.iconview.set_spacing(3)
 
         self.cellthmb = CellRendererImage()
         self.iconview.pack_start(self.cellthmb, False)
         self.iconview.set_attributes(self.cellthmb, image=1,
             scale=4, rotation=6, cropL=7, cropR=8, cropT=9, cropB=10,
             width=11, height=12, resample=13)
-
-        self.celltxt = gtk.CellRendererText()
-        self.celltxt.set_property('width', self.iv_col_width)
-        self.celltxt.set_property('wrap-width', self.iv_col_width)
-        self.celltxt.set_property('alignment', pango.ALIGN_CENTER)
-        self.iconview.pack_start(self.celltxt, False)
-        self.iconview.set_attributes(self.celltxt, text=0)
 
         self.iconview.set_selection_mode(gtk.SELECTION_MULTIPLE)
         self.iconview.enable_model_drag_source(gtk.gdk.BUTTON1_MASK,
@@ -372,9 +365,7 @@ class PdfShuffler:
                              for row in self.model))
         if max_w != self.iv_col_width:
             self.iv_col_width = max_w
-            self.celltxt.set_property('width', self.iv_col_width)
-            self.celltxt.set_property('wrap-width', self.iv_col_width)
-            self.iconview.set_item_width(self.iv_col_width + 12) #-1)
+            self.iconview.set_item_width(-1)
             self.on_window_size_request(self.window, None)
 
     def on_keypress_event(self, widget, event):
