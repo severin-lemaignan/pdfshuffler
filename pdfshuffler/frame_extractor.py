@@ -3,6 +3,15 @@ import re
 
 class FrameExtractor:
 
+    def __init__(self, filename):
+        self.filename = filename
+        self.frames = []
+
+        self.load_latex()
+
+    def isbeamer(self):
+        return len(self.frames) > 0
+
     def get_until_closing_brace(self, text):
         openning = 0
         for i in range(len(text)):
@@ -62,11 +71,10 @@ class FrameExtractor:
         return None, text
 
 
-    def load_latex(self, texfile):
+    def load_latex(self):
 
-        self.frames = []
 
-        with open(texfile,'r') as f:
+        with open(self.filename,'r') as f:
 
             preamble = ""
             footer = ""
@@ -97,6 +105,18 @@ class FrameExtractor:
                 self.header = preamble
                 self.footer = footer
 
+    def export_with_order(self, filename, frames_order):
+        
+        res = self.header
+        for idx in frames_order:
+            res += "\n%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n\n"
+            res += self.frames[idx-1]
+        res += "\n%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n"
+        res += "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n\n"
+        res += self.footer
+
+        with open(filename, 'w') as f:
+            f.write(res)
 
 
 if __name__ == "__main__":
