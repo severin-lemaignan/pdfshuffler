@@ -1,31 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-"""
-
- PdfShuffler 0.6.0 - GTK+ based utility for splitting, rearrangement and
- modification of PDF documents.
- Copyright (C) 2008-2012 Konstantinos Poulios
- <https://sourceforge.net/projects/pdfshuffler>
-
- This file is part of PdfShuffler.
-
- PdfShuffler is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 3 of the License, or
- (at your option) any later version.
-
- This program is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License along
- with this program; if not, write to the Free Software Foundation, Inc.,
- 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-
-"""
-
 import os
 import shutil       # for file operations like whole directory deletion
 import sys          # for proccessing of command line args
@@ -36,12 +11,12 @@ from copy import copy
 
 import locale       #for multilanguage support
 import gettext
-gettext.install('pdfshuffler', unicode=1)
+gettext.install('slidessorter', unicode=1)
 
 
-APPNAME = 'PdfShuffler' # PDF-Shuffler, PDFShuffler, pdfshuffler
-VERSION = '0.6.0'
-WEBSITE = 'http://pdfshuffler.sourceforge.net/'
+APPNAME = 'Slides Sorter'
+VERSION = '0.1.0'
+WEBSITE = 'https://github.com/severin-lemaignan/slidessorter'
 LICENSE = 'GNU General Public License (GPL) Version 3.'
 
 try:
@@ -100,32 +75,32 @@ class PdfShuffler:
 
     def __init__(self):
         # Create the temporary directory
-        self.tmp_dir = tempfile.mkdtemp("pdfshuffler")
+        self.tmp_dir = tempfile.mkdtemp("slidessorter")
         os.chmod(self.tmp_dir, 0700)
 
         icon_theme = gtk.icon_theme_get_default()
         try:
-            gtk.window_set_default_icon(icon_theme.load_icon("pdfshuffler", 64, 0))
+            gtk.window_set_default_icon(icon_theme.load_icon("slidessorter", 64, 0))
         except:
             print(_("Can't load icon. Application is not installed correctly."))
 
         # Import the user interface file, trying different possible locations
-        ui_path = '/usr/share/pdfshuffler/pdfshuffler.ui'
+        ui_path = '/usr/share/slidessorter/slidessorter.ui'
         if not os.path.exists(ui_path):
-            ui_path = '/usr/local/share/pdfshuffler/pdfshuffler.ui'
+            ui_path = '/usr/local/share/slidessorter/slidessorter.ui'
 
         if not os.path.exists(ui_path):
             parent_dir = os.path.dirname( \
                          os.path.dirname(os.path.realpath(__file__)))
-            ui_path = os.path.join(parent_dir, 'data', 'pdfshuffler.ui')
+            ui_path = os.path.join(parent_dir, 'data', 'slidessorter.ui')
 
         if not os.path.exists(ui_path):
             head, tail = os.path.split(parent_dir)
             while tail != 'lib' and tail != '':
                 head, tail = os.path.split(head)
             if tail == 'lib':
-                ui_path = os.path.join(head, 'share', 'pdfshuffler', \
-                                       'pdfshuffler.ui')
+                ui_path = os.path.join(head, 'share', 'slidessorter', \
+                                       'slidessorter.ui')
 
         self.uiXML = gtk.Builder()
         self.uiXML.add_from_file(ui_path)
@@ -1025,7 +1000,7 @@ class PdfShuffler:
             'Developed using GTK+ and Python') % APPNAME)
         about_dialog.set_authors(['Konstantinos Poulios',])
         about_dialog.set_website_label(WEBSITE)
-        about_dialog.set_logo_icon_name('pdfshuffler')
+        about_dialog.set_logo_icon_name('slidessorter')
         about_dialog.set_license(LICENSE)
         about_dialog.connect('response', lambda w, *args: w.destroy())
         about_dialog.connect('delete_event', lambda w, *args: w.destroy())

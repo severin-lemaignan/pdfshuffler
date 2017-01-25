@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=1.0
+Name=Slides Sorter
+Comment=GUI for Latex Beamer slidedecks sorting and re-organization
+Type=Application
+Exec=slidessorter
+Icon=slidessorter
+Categories=Office;
+Terminal=false
+StartupNotify=false
+Name[en_GB]=slidessorter.desktop

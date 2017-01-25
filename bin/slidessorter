@@ -1,0 +1,9 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
+try:
+   from slidessorter.pdfshuffler import main
+   main()
+except ImportError as e:
+   print('Error: Could not import slidessorter')
+   print('Cause: %s' % e)
