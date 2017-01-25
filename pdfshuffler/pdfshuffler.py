@@ -75,6 +75,7 @@ from pyPdf import PdfFileWriter, PdfFileReader
 from pdfshuffler_iconview import CellRendererImage
 gobject.type_register(CellRendererImage)
 
+from frame_extractor import FrameExtractor
 import time
 
 class PdfShuffler:
@@ -261,6 +262,8 @@ class PdfShuffler:
 
         self.set_unsaved(False)
 
+        self.latex_extractor = None
+
         # Importing documents passed as command line arguments
         for filename in sys.argv[1:]:
             self.add_pdf_pages(filename)
@@ -444,6 +447,21 @@ class PdfShuffler:
         gobject.idle_add(self.retitle)
         if res:
             gobject.idle_add(self.render)
+
+
+        ## Latex source
+        texname = os.path.splitext(filename)[0] + ".tex"
+        if os.path.isfile(texname): # is it a file?
+            self.latex_extractor = FrameExtractor(texname)
+            if self.latex_extractor.isbeamer():
+                if len(self.latex_extractor.frames) == npage:
+                    self.info_message_dialog("Found Beamer Latex source (%s frames: nb of frames match)!" % npage)
+                else:
+                    self.error_message_dialog("Found Beamer Latex source, but nb of frames do not match: %s in PDF, %s in Beamer source" % (npage, len(self.latex_extractor.frames)))
+                    self.latex_extractor = None
+            else:
+                self.latex_extractor = None
+
         return res
 
     def choose_export_pdf_name(self, widget=None, only_selected=False):
@@ -509,6 +527,7 @@ class PdfShuffler:
                 #   ask for password and decrypt file
             pdf_input.append(pdfdoc_inp)
 
+        frames_order = []
         for row in self.model:
 
             if only_selected and row.path not in selection:
@@ -517,6 +536,7 @@ class PdfShuffler:
             # add pages from input to output document
             nfile = row[2]
             npage = row[3]
+            frames_order.append(npage)
             current_page = copy(pdf_input[nfile-1].getPage(npage-1))
             angle = row[6]
             angle0 = current_page.get("/Rotate",0)
@@ -549,6 +569,9 @@ class PdfShuffler:
 
         # finally, write "output" to document-output.pdf
         pdf_output.write(file(file_out, 'wb'))
+
+        if self.latex_extractor:
+            self.latex_extractor.export_with_order(os.path.splitext(file_out)[0] + ".tex", frames_order)
 
     def on_action_add_doc_activate(self, widget, data=None):
         """Import doc"""
@@ -1016,6 +1039,15 @@ class PdfShuffler:
         response = error_msg_dlg.run()
         if response == gtk.RESPONSE_OK:
             error_msg_dlg.destroy()
+
+    def info_message_dialog(self, msg):
+        info_msg_dlg = gtk.MessageDialog(flags=gtk.DIALOG_MODAL,
+                                          type=gtk.MESSAGE_INFO,
+                                          message_format=str(msg),
+                                          buttons=gtk.BUTTONS_OK)
+        response = info_msg_dlg.run()
+        if response == gtk.RESPONSE_OK:
+            info_msg_dlg.destroy()
 
 class PDF_Doc:
     """Class handling PDF documents"""
